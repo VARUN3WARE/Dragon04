@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 import streamlit as st
 import folium
 from folium import Marker
-from streamlit_folium import folium_static
+from streamlit_folium import st_folium, folium_static
 
 # Data processing
 data = pd.read_csv("new.csv")
@@ -99,22 +99,6 @@ def Dragon(data, lat, long):
     y1_nw = np.array(y1_nw)
     return y1_nw
 
-
-
-
-
-
-
-
-
-
-
-
-import streamlit as st
-import folium
-from folium import Marker
-from streamlit_folium import st_folium, folium_static
-
 # Initialize Streamlit app
 st.title("Interactive World Map with Clickable Points")
 
@@ -122,7 +106,7 @@ st.title("Interactive World Map with Clickable Points")
 map_center = [20.0, 0.0]
 m = folium.Map(location=map_center, zoom_start=2)
 
-# Handle map clicks
+# Function to handle map clicks
 def map_click(lat, lon):
     # Clear existing markers and add a new one at the clicked location
     m._children.clear()
