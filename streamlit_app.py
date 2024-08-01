@@ -15,6 +15,9 @@ data = pd.read_csv("new.csv")
 
 # Model function
 def Dragon(data, lat, long):
+    g =lat
+    lat= long
+    long=g
     X = data.drop(columns=['latitude', 'longitude'])
     scaler = QuantileTransformer(output_distribution='uniform')
     X = scaler.fit_transform(X)
@@ -96,8 +99,16 @@ def Dragon(data, lat, long):
     y1_nw = np.array(y1_nw)
     return y1_nw
 
-lat = -101
-long = 38
+
+
+
+
+
+
+
+
+lat = 38
+long = -101
 model_output = Dragon(data, lat, long)
 
 # Function to generate the map with markers
