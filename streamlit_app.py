@@ -127,16 +127,39 @@ st.markdown("""
     This app displays the coordinates output by the model on an OpenStreetMap. Click on the map to select a location.
 """)
 
-# Create the map centered around a default location
+import streamlit as st
+import folium
+from streamlit_folium import st_folium
+
+# Create a folium map
 m = folium.Map(location=[0, 0], zoom_start=2)
 
-# Render the map and capture the click event data
-clicked_location = st_folium(m, width=700, height=500, return_data=True)
+# Add JavaScript to handle click events and send data back to Streamlit
+click_js = """
+    function onMapClick(e) {
+        let lat = e.latlng.lat;
+        let lng = e.latlng.lng;
+        // Send data back to Streamlit
+        window.parent.postMessage({type: 'ST_CLICK', data: {lat: lat, lng: lng}}, '*');
+    }
+    map.on('click', onMapClick);
+"""
 
-# Extract latitude and longitude from the clicked location if available
-if clicked_location:
-    lat = clicked_location.get('lat', 0)  # Default to 0 if not found
-    long = clicked_location.get('lng', 0)  # Default to 0 if not found
+# Add JavaScript to the map
+m.get_root().html.add_child(folium.Element(f'<script>{click_js}</script>'))
+
+# Render the map
+st_folium(m, width=700, height=500)
+
+# Capture the click event data
+st.session_state.clicked_location = None
+def handle_click_data(data):
+    if data and data.get('type') == 'ST_CLICK':
+        st.session_state.clicked_location = data.get('data')
+
+if st.session_state.clicked_location:
+    lat = st.session_state.clicked_location.get('lat', 0)
+    long = st.session_state.clicked_location.get('lng', 0)
     
     # Optionally display the clicked coordinates
     st.write(f"Clicked location: Latitude = {lat}, Longitude = {long}")
@@ -150,4 +173,5 @@ if clicked_location:
     folium_static(map_object)
 else:
     st.write("Click on the map to select a location.")
+
 
