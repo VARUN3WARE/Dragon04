@@ -15,9 +15,9 @@ data = pd.read_csv("new.csv")
 
 # Model function
 def Dragon(data, lat, long):
-    g =lat
-    lat= long
-    long=g
+    g = lat
+    lat = long
+    long = g
     X = data.drop(columns=['latitude', 'longitude'])
     scaler = QuantileTransformer(output_distribution='uniform')
     X = scaler.fit_transform(X)
@@ -99,39 +99,58 @@ def Dragon(data, lat, long):
     y1_nw = np.array(y1_nw)
     return y1_nw
 
-
-
-
-
-
-
-
-
-lat = 38
-long = -101
-model_output = Dragon(data, lat, long)
-
-# Function to generate the map with markers
-def create_map(coordinates):
-    if len(coordinates) > 0:
-        initial_location = coordinates[0]
-    else:
-        initial_location = [0, 0]
-
-    m = folium.Map(location=initial_location, zoom_start=5)
-    for coord in coordinates:
-        Marker(location=coord).add_to(m)
-    return m
-
 # Streamlit app
 st.title("Location Visualization")
 
 st.markdown("""
     This app displays the coordinates output by the model on an OpenStreetMap.
+    Click on the map to get the latitude and longitude of the selected point.
 """)
-model_output = [(lat, long) for long, lat in model_output]
 
-coordinates = [tuple(coord) for coord in model_output]
+# Create the initial world map
+world_map = folium.Map(location=[0, 0], zoom_start=2)
 
-map_object = create_map(coordinates)
-folium_static(map_object)
+# Add a click event listener to the map
+click_js = """
+    function(e) {
+        var coord = e.latlng;
+        var lat = coord.lat;
+        var lng = coord.lng;
+        var data = {'latitude': lat, 'longitude': lng};
+        fetch('/api/receive_click', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
+"""
+folium.ClickForMarker(popup="Click to get coordinates", icon=folium.Icon(color='blue')).add_to(world_map)
+world_map.get_root().html.add_child(folium.Element(f"<script>{click_js}</script>"))
+
+# Display the map with Streamlit
+folium_static(world_map)
+
+# Function to handle the API call for click events
+def get_clicked_coordinates():
+    # This function would be used to handle API POST request and fetch the coordinates
+    # This can be done using a custom Streamlit server route or an external service
+    # In this code, it will be left as a placeholder
+    pass
+
+# Handle form submission to get new coordinates
+if st.button('Get Coordinates from Clicked Location'):
+    coords = get_clicked_coordinates()
+    if coords:
+        lat = coords['latitude']
+        long = coords['longitude']
+        st.write(f"Clicked Location: Latitude = {lat}, Longitude = {long}")
+
+        # Re-run the Dragon function with the clicked coordinates
+        model_output = Dragon(data, lat, long)
+
+        # Update the map with the new coordinates
+        coordinates = [(lat, long) for long, lat in model_output]
+        updated_map = create_map(coordinates)
+        folium_static(updated_map)
