@@ -9,6 +9,7 @@ import streamlit as st
 import folium
 from folium import Marker
 from streamlit_folium import folium_static
+from streamlit_folium import st_folium
 
 # Data processing
 data = pd.read_csv("new.csv")
