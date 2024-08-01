@@ -120,7 +120,9 @@ def map_click(lat, lon):
     st.write(f"Clicked coordinates: Latitude = {len(model_output)}")
     for i in range(len(model_output)): 
         map_center =model_output[i]
-        folium.Marker(location=map_center, draggable=False).add_to(m)
+        st.write(f"Clicked coordinates: Latitude = {model_output[i]}")
+
+        # folium.Marker(location=map_center, draggable=False).add_to(m)
 
 # Render the Folium map in Streamlit
 output = st_folium(m, width=700, height=500)
