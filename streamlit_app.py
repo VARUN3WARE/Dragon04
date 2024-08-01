@@ -143,3 +143,36 @@ if output['last_clicked'] is not None:
 
 
 
+
+lat = clicked_lat
+long = clicked_lon
+model_output = Dragon(data, lat, long)
+
+# Function to generate the map with markers
+def create_map(coordinates):
+    if len(coordinates) > 0:
+        initial_location = coordinates[0]
+    else:
+        initial_location = [0, 0]
+
+    m = folium.Map(location=initial_location, zoom_start=5)
+    for coord in coordinates:
+        Marker(location=coord).add_to(m)
+    return m
+
+# Streamlit app
+st.title("Location Visualization")
+
+st.markdown("""
+    This app displays the coordinates output by the model on an OpenStreetMap.
+""")
+model_output = [(lat, long) for long, lat in model_output]
+
+coordinates = [tuple(coord) for coord in model_output]
+
+map_object = create_map(coordinates)
+folium_static(map_object)
+
+
+
+
