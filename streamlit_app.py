@@ -52,7 +52,7 @@ def Dragon(data, lat, long):
     Xtestnew = []
     for i in range(len(y1)):
         k = math.sqrt(math.pow(y1[i] - long, 2) + math.pow(y2[i] - lat, 2))
-        if k < 5:
+        if k < 3:
             Xtestnew.append(X[i])
     Xtestnew = np.array(Xtestnew)
 
@@ -60,40 +60,48 @@ def Dragon(data, lat, long):
     lgb_regressor_latitude = lgb.Booster(model_file='model_latitude.txt')
     lgb_regressor_longitude = lgb.Booster(model_file='model_longitude.txt')
     params.update({'learning_rate': 0.01, 'min_gain_to_split': 0, 'min_data_in_leaf': 1, 'num_leaves': 100, 'max_depth': -1})
-    lgb_regressor_latitude = lgb.train(params, lgb.Dataset(X_new, label=y_new[:, 0]), num_boost_round=50, init_model=lgb_regressor_latitude)
-    lgb_regressor_longitude = lgb.train(params, lgb.Dataset(X_new, label=y_new[:, 1]), num_boost_round=50, init_model=lgb_regressor_longitude)
+    try:
+        lgb_regressor_latitude = lgb.train(params, lgb.Dataset(X_new, label=y_new[:, 0]), num_boost_round=50, init_model=lgb_regressor_latitude)
+        lgb_regressor_longitude = lgb.train(params, lgb.Dataset(X_new, label=y_new[:, 1]), num_boost_round=50, init_model=lgb_regressor_longitude)
 
-    # Custom wrapper for predictions
-    class CustomMultiOutputRegressor:
-        def __init__(self, regressor_latitude, regressor_longitude):
-            self.regressor_latitude = regressor_latitude
-            self.regressor_longitude = regressor_longitude
+        # Custom wrapper for predictions
+        class CustomMultiOutputRegressor:
+            def __init__(self, regressor_latitude, regressor_longitude):
+                self.regressor_latitude = regressor_latitude
+                self.regressor_longitude = regressor_longitude
 
-        def predict(self, X):
-            pred_latitude = self.regressor_latitude.predict(X, num_iteration=self.regressor_latitude.best_iteration)
-            pred_longitude = self.regressor_longitude.predict(X, num_iteration=self.regressor_longitude.best_iteration)
-            return np.column_stack((pred_longitude, pred_latitude))
+            def predict(self, X):
+                pred_latitude = self.regressor_latitude.predict(X, num_iteration=self.regressor_latitude.best_iteration)
+                pred_longitude = self.regressor_longitude.predict(X, num_iteration=self.regressor_longitude.best_iteration)
+                return np.column_stack((pred_longitude, pred_latitude))
 
-    custom_multi_output_regressor = CustomMultiOutputRegressor(lgb_regressor_latitude, lgb_regressor_longitude)
-    y_pred = custom_multi_output_regressor.predict(Xtestnew)
+        custom_multi_output_regressor = CustomMultiOutputRegressor(lgb_regressor_latitude, lgb_regressor_longitude)
+        y_pred = custom_multi_output_regressor.predict(Xtestnew)
 
-    # Filter predictions based on distance
-    ans1 = y_pred[:, 0]
-    ans2 = y_pred[:, 1]
-    y1_nw = []
-    for i in range(len(ans1)):
-        k = math.sqrt(math.pow(ans2[i] - long, 2) + math.pow(ans1[i] - lat, 2))
-        if k <= 1.5:
-            y1_nw.append(y_pred[i])
-    y1_nw = np.array(y1_nw)
-    return y1_nw
+        # Filter predictions based on distance
+        ans1 = y_pred[:, 0]
+        ans2 = y_pred[:, 1]
+        y1_nw = []
+        for i in range(len(ans1)):
+            k = math.sqrt(math.pow(ans2[i] - long, 2) + math.pow(ans1[i] - lat, 2))
+            if k <= 2:
+                y1_nw.append(y_pred[i])
+        y1_nw = np.array(y1_nw)
+        return y1_nw
+    except Exception as e:
+        print("")
+        print("")
+        print("")
+        print(e)
+        print("")
+        print("")
 
 # Streamlit app setup
 st.title("Interactive World Map with Clickable Points")
 
 # Initialize Folium map
-map_center = [38.0, -101.0]
-m = folium.Map(location=map_center, zoom_start=2)
+map_center = [37.0, -101.0]
+m = folium.Map(location=map_center, zoom_start=6)
 
 # Add initial marker
 click_marker = folium.Marker(location=map_center, draggable=False)
@@ -101,10 +109,27 @@ click_marker.add_to(m)
 
 # Handle map clicks
 def map_click(lat, lon):
-    model_output = Dragon(data, lat, lon)
-    st.write(f"Number of locations within the range: {len(model_output)}")
-    for loc in model_output: 
-        folium.Marker(location=loc, draggable=False).add_to(m)
+    try:
+        model_output = Dragon(data, lat, lon)
+        model_output =np.array(model_output)
+        st.write(f"Number of locations within the range: {len(model_output)}")
+        for loc in model_output:
+            j =loc[0]
+            loc[0]=loc[1]
+            loc[1]=j
+            loc =np.array(loc)
+            
+            st.markdown(loc)
+            if isinstance(loc, (list, np.ndarray)) and len(loc) == 2:
+                loc_tuple = tuple(loc)  # Convert to tuple
+                st.write(f"Adding marker at: {loc}")
+                folium.Marker([loc[0] ,loc[1]], popup=f"Coordinates: {lat}, {lon}").add_to(m)
+            else:
+                st.write(f"Invalid location format: {loc}")
+
+    except Exception as e:
+        st.write(f"Error: {e}")
+
 
 # Display the map and handle click events
 output = st_folium(m, width=700, height=500)
