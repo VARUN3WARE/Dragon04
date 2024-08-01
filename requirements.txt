@@ -1,4 +1,5 @@
 streamlit>=1.26.0
 pandas
 numpy
-light
+lightgbm
+sklearn
