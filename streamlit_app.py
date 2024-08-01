@@ -112,7 +112,8 @@ def Dragon(data, lat, long):
 
 import streamlit as st
 import folium
-from streamlit_folium import st_folium
+from folium import Marker
+from streamlit_folium import st_folium, folium_static
 
 # Initialize Streamlit app
 st.title("Interactive World Map with Clickable Points")
@@ -121,59 +122,44 @@ st.title("Interactive World Map with Clickable Points")
 map_center = [20.0, 0.0]
 m = folium.Map(location=map_center, zoom_start=2)
 
-# Add a marker that will update based on the clicked location
-click_marker = folium.Marker(location=map_center, draggable=False)
-click_marker.add_to(m)
-
 # Handle map clicks
 def map_click(lat, lon):
-    click_marker.location = [lat, lon]
+    # Clear existing markers and add a new one at the clicked location
+    m._children.clear()
     folium.Marker([lat, lon], popup=f"Coordinates: {lat}, {lon}").add_to(m)
+    folium.Marker(location=[lat, lon], draggable=False).add_to(m)
 
 # Render the Folium map in Streamlit
-output = st_folium(m, width=700, height=500)
-lat=0
-long =0
+output = st_folium(m, width=700, height=500, return_data=True)
+
+lat = 0
+long = 0
 # Check if a click event has occurred and update the map
-if output['last_clicked'] is not None:
+if output and 'last_clicked' in output:
     clicked_lat = output['last_clicked']['lat']
     clicked_lon = output['last_clicked']['lng']
     map_click(clicked_lat, clicked_lon)
     st.write(f"Clicked coordinates: Latitude = {clicked_lat}, Longitude = {clicked_lon}")
     lat = clicked_lat
     long = clicked_lon
-model_output = Dragon(data, lat, long)
 
-# Function to generate the map with markers
-def create_map(coordinates):
-    if len(coordinates) > 0:
-        initial_location = coordinates[0]
-    else:
-        initial_location = [0, 0]
+    # Call the Dragon function with the new coordinates
+    model_output = Dragon(data, lat, long)
 
-    m = folium.Map(location=initial_location, zoom_start=5)
-    for coord in coordinates:
-        Marker(location=coord).add_to(m)
-    return m
+    # Function to generate the map with markers
+    def create_map(coordinates):
+        if len(coordinates) > 0:
+            initial_location = coordinates[0]
+        else:
+            initial_location = [0, 0]
 
-# Streamlit app
-st.title("Location Visualization")
+        m = folium.Map(location=initial_location, zoom_start=5)
+        for coord in coordinates:
+            Marker(location=coord).add_to(m)
+        return m
 
-st.markdown("""
-    This app displays the coordinates output by the model on an OpenStreetMap.
-""")
-model_output = [(lat, long) for long, lat in model_output]
-
-coordinates = [tuple(coord) for coord in model_output]
-
-map_object = create_map(coordinates)
-folium_static(map_object)
-
-
-
-
-
-
-
-
-
+    coordinates = [(long, lat) for long, lat in model_output]
+    map_object = create_map(coordinates)
+    folium_static(map_object)
+else:
+    st.write("Click on the map to select a location.")
