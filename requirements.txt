@@ -3,3 +3,6 @@ pandas
 numpy
 lightgbm
 sklearn
+pyngrok
+folium
+streamlit_folium
