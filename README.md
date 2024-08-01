@@ -1,6 +1,7 @@
 # Location Prediction App
 #Dragon04
-https://dragon04.streamlit.app/
+
+#Project link =>https://dragon04.streamlit.app/
 ## Project Description
 
 The Location Prediction App is a web application built with Streamlit and Folium that visualizes geographic coordinates and provides predictive modeling for location-based data. The app allows users to click on a world map to select a location, and then uses a machine learning model to predict and display nearby locations based on the selected coordinates.
