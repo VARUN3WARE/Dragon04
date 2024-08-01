@@ -127,9 +127,7 @@ st.markdown("""
     This app displays the coordinates output by the model on an OpenStreetMap. Click on the map to select a location.
 """)
 
-import streamlit as st
-import folium
-from streamlit_folium import st_folium
+
 
 # Create a folium map
 m = folium.Map(location=[0, 0], zoom_start=2)
