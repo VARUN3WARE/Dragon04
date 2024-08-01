@@ -118,6 +118,10 @@ st.title("Location Visualization")
 st.markdown("""
     This app displays the coordinates output by the model on an OpenStreetMap.
 """)
+for (x,y) in model_output:
+    chn=y
+    y=x
+    x=chn
 coordinates = [tuple(coord) for coord in model_output]
 
 map_object = create_map(coordinates)
