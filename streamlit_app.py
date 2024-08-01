@@ -116,9 +116,9 @@ click_marker.add_to(m)
 
 # Handle map clicks
 def map_click(lat, lon):
-    click_marker.location = [lat, lon]
     model_output =Dragon(data,lat,lon)
     for i in range(len(model_output)):    
+        click_marker.location = [model_output[i][0], model_output[i][1]]
         folium.Marker([model_output[i][0], model_output[i][1]], popup=f"Coordinates: {model_output[i][0]}, {model_output[i][1]}").add_to(m)
 
 # Render the Folium map in Streamlit
