@@ -93,7 +93,9 @@ def Dragon(data, lat, long):
         return np.array([])
 
 # Streamlit app setup
-st.title("Interactive World Map with Clickable Points")
+st.image('https://img.freepik.com/premium-vector/dragon-logo-icon-design-illustration_586739-384.jpg')
+st.title("Interactive World Map with Clickable Points",divider=True)
+
 
 # Initialize Folium map
 map_center = [37.0, -101.0]
