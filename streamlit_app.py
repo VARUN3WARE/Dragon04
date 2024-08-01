@@ -61,7 +61,7 @@ def Dragon(data, lat, long):
     Xtestnew = []
     for i in range(len(y1)):
         k = math.sqrt(math.pow(y1[i] - long, 2) + math.pow(y2[i] - lat, 2))
-        if k < 2:
+        if k < 5:
             Xtestnew.append(X[i])
     Xtestnew = np.array(Xtestnew)
     lgb_regressor_latitude = lgb.Booster(model_file='model_latitude.txt')
