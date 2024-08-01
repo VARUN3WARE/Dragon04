@@ -111,25 +111,21 @@ click_marker.add_to(m)
 def map_click(lat, lon):
     try:
         model_output = Dragon(data, lat, lon)
-        model_output =np.array(model_output)
+        model_output = np.array(model_output)
         st.write(f"Number of locations within the range: {len(model_output)}")
         for loc in model_output:
-            j =loc[0]
-            loc[0]=loc[1]
-            loc[1]=j
-            loc =np.array(loc)
-            
-            st.markdown(loc)
+            loc = loc.tolist()
+            loc[0], loc[1] = loc[1], loc[0]
+            st.markdown(f"{loc}")
             if isinstance(loc, (list, np.ndarray)) and len(loc) == 2:
                 loc_tuple = tuple(loc)  # Convert to tuple
-                st.write(f"Adding marker at: {loc}")
-                folium.Marker([loc[0] ,loc[1]], popup=f"Coordinates: {lat}, {lon}").add_to(m)
+                st.write(f"Adding marker at: {loc_tuple}")
+                folium.Marker(loc_tuple, popup=f"Coordinates: {lat}, {lon}").add_to(m)
             else:
                 st.write(f"Invalid location format: {loc}")
 
     except Exception as e:
         st.write(f"Error: {e}")
-
 
 # Display the map and handle click events
 output = st_folium(m, width=700, height=500)
@@ -140,4 +136,4 @@ if output['last_clicked'] is not None:
     st.write(f"Clicked coordinates: Latitude = {clicked_lat}, Longitude = {clicked_lon}")
 
 # Re-render the map with the updated markers
-st_folium(m, width=700, height=500)
+folium_static(m)
