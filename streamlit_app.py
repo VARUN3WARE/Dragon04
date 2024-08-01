@@ -99,9 +99,13 @@ st.title("Interactive World Map with Clickable Points")
 map_center = [37.0, -101.0]
 m = folium.Map(location=map_center, zoom_start=6)
 
-# Add initial marker
-click_marker = folium.Marker(location=map_center, draggable=False, icon=folium.Icon(color='red'))
-click_marker.add_to(m)
+# Add initial blue marker
+initial_marker = folium.Marker(
+    location=map_center,
+    draggable=False,
+    icon=folium.Icon(color='blue')
+)
+initial_marker.add_to(m)
 
 # Handle map clicks
 def map_click(lat, lon):
@@ -109,16 +113,17 @@ def map_click(lat, lon):
         model_output = Dragon(data, lat, lon)
         model_output = np.array(model_output)
         st.write(f"Number of locations within the range: {len(model_output)}")
-        for loc in model_output:
+        for i, loc in enumerate(model_output):
             loc = loc.tolist()
-            loc[0], loc[1] = loc[1], loc[0]
-            st.markdown(f"{loc}")
-            if isinstance(loc, (list, np.ndarray)) and len(loc) == 2:
-                loc_tuple = tuple(loc)  # Convert to tuple
-                st.write(f"Adding marker at: {loc_tuple}")
-                folium.Marker(loc_tuple, popup=f"Coordinates: {lat}, {lon}").add_to(m)
-            else:
-                st.write(f"Invalid location format: {loc}")
+            loc[0], loc[1] = loc[1], loc[0]  # Swap latitude and longitude
+            loc_tuple = tuple(loc)  # Convert to tuple
+            st.markdown(f"{loc_tuple}")
+            # Add red marker for the new locations
+            folium.Marker(
+                loc_tuple,
+                popup=f"Coordinates: {lat}, {lon}",
+                icon=folium.Icon(color='red')  # Red color for new markers
+            ).add_to(m)
 
     except Exception as e:
         st.write(f"Error: {e}")
