@@ -132,20 +132,16 @@ def map_click(lat, lon):
 
 # Render the Folium map in Streamlit
 output = st_folium(m, width=700, height=500)
-
+lat=0
+long =0
 # Check if a click event has occurred and update the map
 if output['last_clicked'] is not None:
     clicked_lat = output['last_clicked']['lat']
     clicked_lon = output['last_clicked']['lng']
     map_click(clicked_lat, clicked_lon)
     st.write(f"Clicked coordinates: Latitude = {clicked_lat}, Longitude = {clicked_lon}")
-
-
-
-
-
-lat = clicked_lat
-long = clicked_lon
+    lat = clicked_lat
+    long = clicked_lon
 model_output = Dragon(data, lat, long)
 
 # Function to generate the map with markers
@@ -172,6 +168,11 @@ coordinates = [tuple(coord) for coord in model_output]
 
 map_object = create_map(coordinates)
 folium_static(map_object)
+
+
+
+
+
 
 
 
