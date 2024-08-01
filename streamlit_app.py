@@ -132,4 +132,4 @@ if output['last_clicked'] is not None:
     st.write(f"Clicked coordinates: Latitude = {clicked_lat}, Longitude = {clicked_lon}")
 
 # Re-render the map with the updated markers
-folium_static(m)
+output = st_folium(m, width=700, height=500)
