@@ -120,14 +120,29 @@ def Dragon(data, lat, long):
 
 
 
+import streamlit as st
+import folium
+from folium import Marker
+from streamlit_folium import st_folium, folium_static
+
+# Function to generate the map with markers
+def create_map(coordinates):
+    if len(coordinates) > 0:
+        initial_location = coordinates[0]
+    else:
+        initial_location = [0, 0]
+
+    m = folium.Map(location=initial_location, zoom_start=5)
+    for coord in coordinates:
+        Marker(location=coord).add_to(m)
+    return m
+
 # Streamlit app
 st.title("Location Visualization")
 
 st.markdown("""
     This app displays the coordinates output by the model on an OpenStreetMap. Click on the map to select a location.
 """)
-
-
 
 # Create a folium map
 m = folium.Map(location=[0, 0], zoom_start=2)
@@ -146,20 +161,14 @@ click_js = """
 # Add JavaScript to the map
 m.get_root().html.add_child(folium.Element(f'<script>{click_js}</script>'))
 
-# Render the map
-st_folium(m, width=700, height=500)
+# Render the map and capture click events
+click_data = st_folium(m, width=700, height=500, return_data=True)
 
-# Capture the click event data
-st.session_state.clicked_location = None
-def handle_click_data(data):
-    if data and data.get('type') == 'ST_CLICK':
-        st.session_state.clicked_location = data.get('data')
-
-if st.session_state.clicked_location:
-    lat = st.session_state.clicked_location.get('lat', 0)
-    long = st.session_state.clicked_location.get('lng', 0)
+# Process the click event data
+if click_data and 'lat' in click_data and 'lng' in click_data:
+    lat = click_data['lat']
+    long = click_data['lng']
     
-    # Optionally display the clicked coordinates
     st.write(f"Clicked location: Latitude = {lat}, Longitude = {long}")
     
     # Call the Dragon function with the new coordinates
@@ -171,5 +180,6 @@ if st.session_state.clicked_location:
     folium_static(map_object)
 else:
     st.write("Click on the map to select a location.")
+
 
 
