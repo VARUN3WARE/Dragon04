@@ -107,7 +107,7 @@ from streamlit_folium import st_folium
 st.title("Interactive World Map with Clickable Points")
 
 # Create a Folium map centered on the world
-map_center = [20.0, 0.0]
+map_center = [38.0, -101.0]
 m = folium.Map(location=map_center, zoom_start=2)
 
 # Add a marker that will update based on the clicked location
@@ -117,7 +117,9 @@ click_marker.add_to(m)
 # Handle map clicks
 def map_click(lat, lon):
     click_marker.location = [lat, lon]
-    folium.Marker([lat, lon], popup=f"Coordinates: {lat}, {lon}").add_to(m)
+    model_output =Dragon(data ,lat ,lon)
+    for i in len(model_output):    
+        folium.Marker([model_output[i][0], model_output[i][1]], popup=f"Coordinates: {model_output[i][0]}, {model_output[i][1]}").add_to(m)
 
 # Render the Folium map in Streamlit
 output = st_folium(m, width=700, height=500)
