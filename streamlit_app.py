@@ -7,7 +7,7 @@ from sklearn.multioutput import MultiOutputRegressor
 from sklearn.model_selection import train_test_split
 import streamlit as st
 import folium
-from streamlit_folium import st_folium, folium_static
+from streamlit_folium import st_folium
 
 # Data processing
 data = pd.read_csv("new.csv")
@@ -89,12 +89,8 @@ def Dragon(data, lat, long):
         y1_nw = np.array(y1_nw)
         return y1_nw
     except Exception as e:
-        print("")
-        print("")
-        print("")
         print(e)
-        print("")
-        print("")
+        return np.array([])
 
 # Streamlit app setup
 st.title("Interactive World Map with Clickable Points")
