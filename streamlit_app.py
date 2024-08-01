@@ -96,7 +96,7 @@ def Dragon(data, lat, long):
     y1_nw = np.array(y1_nw)
     return y1_nw
 
-lat = -101
+lat = -102
 long = 38
 model_output = Dragon(data, lat, long)
 
