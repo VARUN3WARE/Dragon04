@@ -99,68 +99,47 @@ def Dragon(data, lat, long):
     y1_nw = np.array(y1_nw)
     return y1_nw
 
-# Function to generate the map with markers
-def create_map(coordinates):
-    if len(coordinates) > 0:
-        initial_location = coordinates[0]
-    else:
-        initial_location = [0, 0]
 
-    m = folium.Map(location=initial_location, zoom_start=5)
-    for coord in coordinates:
-        Marker(location=coord).add_to(m)
-    return m
 
-# Streamlit app
-st.title("Location Visualization")
 
-st.markdown("""
-    This app displays the coordinates output by the model on an OpenStreetMap. Click on the map to select a location.
-""")
 
-# Create a folium map
-m = folium.Map(location=[0, 0], zoom_start=2)
 
-# Add JavaScript to handle click events
-click_js = """
-    function onMapClick(e) {
-        let lat = e.latlng.lat;
-        let lng = e.latlng.lng;
-        // Send data back to Streamlit
-        window.parent.postMessage({type: 'ST_CLICK', data: {lat: lat, lng: lng}}, '*');
-    }
-    map.on('click', onMapClick);
-"""
 
-# Add JavaScript to the map
-m.get_root().html.add_child(folium.Element(f'<script>{click_js}</script>'))
 
-# Render the map
-folium_static(m, width=700, height=500)
 
-# Handle click events and update session state
-def handle_click_data():
-    if 'ST_CLICK' in st.session_state:
-        clicked_location = st.session_state['ST_CLICK']
-        st.session_state.clicked_location = clicked_location
 
-# Call the function to handle click data
-handle_click_data()
 
-# Display clicked location and update model output
-if 'clicked_location' in st.session_state:
-    lat = st.session_state.clicked_location.get('lat', 0)
-    long = st.session_state.clicked_location.get('lng', 0)
-    
-    # Optionally display the clicked coordinates
-    st.write(f"Clicked location: Latitude = {lat}, Longitude = {long}")
-    
-    # Call the Dragon function with the new coordinates
-    model_output = Dragon(data, lat, long)
-    
-    # Generate the map with markers based on the model output
-    coordinates = [tuple(coord) for coord in model_output]
-    map_object = create_map(coordinates)
-    folium_static(map_object)
-else:
-    st.write("Click on the map to select a location.")
+
+import streamlit as st
+import folium
+from streamlit_folium import st_folium
+
+# Initialize Streamlit app
+st.title("Interactive World Map with Clickable Points")
+
+# Create a Folium map centered on the world
+map_center = [20.0, 0.0]
+m = folium.Map(location=map_center, zoom_start=2)
+
+# Add a marker that will update based on the clicked location
+click_marker = folium.Marker(location=map_center, draggable=False)
+click_marker.add_to(m)
+
+# Handle map clicks
+def map_click(lat, lon):
+    click_marker.location = [lat, lon]
+    folium.Marker([lat, lon], popup=f"Coordinates: {lat}, {lon}").add_to(m)
+
+# Render the Folium map in Streamlit
+output = st_folium(m, width=700, height=500)
+
+# Check if a click event has occurred and update the map
+if output['last_clicked'] is not None:
+    clicked_lat = output['last_clicked']['lat']
+    clicked_lon = output['last_clicked']['lng']
+    map_click(clicked_lat, clicked_lon)
+    st.write(f"Clicked coordinates: Latitude = {clicked_lat}, Longitude = {clicked_lon}")
+
+
+
+
