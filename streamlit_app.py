@@ -2,14 +2,15 @@ import pandas as pd
 import numpy as np
 import math
 import lightgbm as lgb
-from sklearn.preprocessing import LabelEncoder, QuantileTransformer
+from sklearn.preprocessing import QuantileTransformer
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.model_selection import train_test_split
 import streamlit as st
 import folium
-from folium import Map, Marker
+from folium import Marker
 from streamlit_folium import folium_static
 from pyngrok import ngrok
+import subprocess
 import os
 
 # Set your ngrok authentication token
@@ -17,14 +18,6 @@ ngrok.set_auth_token("2jGs1byP8NLa6LbOuWL6qTFBCCi_cNfnTANqFPxL7LnbuqMw")  # Repl
 
 # Data processing
 data = pd.read_csv("new.csv")
-
-
-
-
-
-
-
-
 
 # Model function
 def Dragon(data, lat, long):
@@ -86,7 +79,7 @@ def Dragon(data, lat, long):
                                         num_boost_round=50, init_model=lgb_regressor_longitude)
 
     class CustomMultiOutputRegressor:
-        def _init_(self, regressor_latitude, regressor_longitude):
+        def __init__(self, regressor_latitude, regressor_longitude):
             self.regressor_latitude = regressor_latitude
             self.regressor_longitude = regressor_longitude
 
@@ -142,29 +135,20 @@ import pandas as pd
 import numpy as np
 import math
 import lightgbm as lgb
-from sklearn.preprocessing import LabelEncoder, QuantileTransformer
+from sklearn.preprocessing import QuantileTransformer
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.model_selection import train_test_split
 import streamlit as st
 import folium
-from folium import Map, Marker
+from folium import Marker
 from streamlit_folium import folium_static
 from pyngrok import ngrok
-import os
 
 # Set your ngrok authentication token
 ngrok.set_auth_token("2jGs1byP8NLa6LbOuWL6qTFBCCi_cNfnTANqFPxL7LnbuqMw")  # Replace with your actual ngrok auth token
 
 # Data processing
 data = pd.read_csv("new.csv")
-
-
-
-
-
-
-
-
 
 # Model function
 def Dragon(data, lat, long):
@@ -226,7 +210,7 @@ def Dragon(data, lat, long):
                                         num_boost_round=50, init_model=lgb_regressor_longitude)
 
     class CustomMultiOutputRegressor:
-        def _init_(self, regressor_latitude, regressor_longitude):
+        def __init__(self, regressor_latitude, regressor_longitude):
             self.regressor_latitude = regressor_latitude
             self.regressor_longitude = regressor_longitude
 
@@ -275,20 +259,14 @@ coordinates = [tuple(coord) for coord in model_output]
 
 map_object = create_map(coordinates)
 folium_static(map_object)
-
-# Start ngrok
-public_url = ngrok.connect(port='8501')
-print(f"Streamlit app running at: {public_url}")
-
-os.system('streamlit run app.py')
 '''
 
 with open('app.py', 'w') as f:
     f.write(script_content)
 
 # Start ngrok
-# Start ngrok
-public_url = ngrok.connect(8501) # Pass the port as a positional argument
+public_url = ngrok.connect(port='8501')
 print(f"Streamlit app running at: {public_url}")
 
-!streamlit run app.py # Use ! to execute the command in a separate process
+# Run the Streamlit app
+subprocess.run(['streamlit', 'run', 'app.py'])
