@@ -120,10 +120,15 @@ def Dragon(data, lat, long):
 
 
 
-import streamlit as st
-import folium
-from folium import Marker
-from streamlit_folium import st_folium, folium_static
+
+
+# Data processing
+data = pd.read_csv("new.csv")
+
+# Model function
+def Dragon(data, lat, long):
+    # Your existing Dragon function code
+    ...
 
 # Function to generate the map with markers
 def create_map(coordinates):
@@ -147,7 +152,7 @@ st.markdown("""
 # Create a folium map
 m = folium.Map(location=[0, 0], zoom_start=2)
 
-# Add JavaScript to handle click events and send data back to Streamlit
+# Add JavaScript to handle click events
 click_js = """
     function onMapClick(e) {
         let lat = e.latlng.lat;
@@ -161,14 +166,17 @@ click_js = """
 # Add JavaScript to the map
 m.get_root().html.add_child(folium.Element(f'<script>{click_js}</script>'))
 
-# Render the map and capture click events
-click_data = st_folium(m, width=700, height=500, return_data=True)
+# Render the map
+folium_static(m, width=700, height=500)
 
-# Process the click event data
-if click_data and 'lat' in click_data and 'lng' in click_data:
-    lat = click_data['lat']
-    long = click_data['lng']
+# Check for click event data
+clicked_location = st.session_state.get('clicked_location')
+
+if clicked_location:
+    lat = clicked_location.get('lat', 0)
+    long = clicked_location.get('lng', 0)
     
+    # Optionally display the clicked coordinates
     st.write(f"Clicked location: Latitude = {lat}, Longitude = {long}")
     
     # Call the Dragon function with the new coordinates
@@ -180,6 +188,16 @@ if click_data and 'lat' in click_data and 'lng' in click_data:
     folium_static(map_object)
 else:
     st.write("Click on the map to select a location.")
+
+# Add code to capture click data in Streamlit session state
+def handle_click_data(data):
+    if data and data.get('type') == 'ST_CLICK':
+        st.session_state.clicked_location = data.get('data')
+
+# Dummy call to simulate the handling of click data
+# You need to implement proper logic for capturing and updating the session state based on your application's needs
+handle_click_data(None)  # Replace with actual logic to update session state based on click data
+
 
 
 
