@@ -9,16 +9,15 @@ import streamlit as st
 import folium
 from folium import Marker
 from streamlit_folium import folium_static
-from streamlit_folium import st_folium
 
 # Data processing
 data = pd.read_csv("new.csv")
 
 # Model function
 def Dragon(data, lat, long):
-    g =lat
-    lat= long
-    long=g
+    g = lat
+    lat = long
+    long = g
     X = data.drop(columns=['latitude', 'longitude'])
     scaler = QuantileTransformer(output_distribution='uniform')
     X = scaler.fit_transform(X)
@@ -100,36 +99,6 @@ def Dragon(data, lat, long):
     y1_nw = np.array(y1_nw)
     return y1_nw
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Data processing
-data = pd.read_csv("new.csv")
-
-# Model function
-def Dragon(data, lat, long):
-    # Your existing Dragon function code
-    ...
-
 # Function to generate the map with markers
 def create_map(coordinates):
     if len(coordinates) > 0:
@@ -169,12 +138,19 @@ m.get_root().html.add_child(folium.Element(f'<script>{click_js}</script>'))
 # Render the map
 folium_static(m, width=700, height=500)
 
-# Check for click event data
-clicked_location = st.session_state.get('clicked_location')
+# Handle click events and update session state
+def handle_click_data():
+    if 'ST_CLICK' in st.session_state:
+        clicked_location = st.session_state['ST_CLICK']
+        st.session_state.clicked_location = clicked_location
 
-if clicked_location:
-    lat = clicked_location.get('lat', 0)
-    long = clicked_location.get('lng', 0)
+# Call the function to handle click data
+handle_click_data()
+
+# Display clicked location and update model output
+if 'clicked_location' in st.session_state:
+    lat = st.session_state.clicked_location.get('lat', 0)
+    long = st.session_state.clicked_location.get('lng', 0)
     
     # Optionally display the clicked coordinates
     st.write(f"Clicked location: Latitude = {lat}, Longitude = {long}")
@@ -188,16 +164,3 @@ if clicked_location:
     folium_static(map_object)
 else:
     st.write("Click on the map to select a location.")
-
-# Add code to capture click data in Streamlit session state
-def handle_click_data(data):
-    if data and data.get('type') == 'ST_CLICK':
-        st.session_state.clicked_location = data.get('data')
-
-# Dummy call to simulate the handling of click data
-# You need to implement proper logic for capturing and updating the session state based on your application's needs
-handle_click_data(None)  # Replace with actual logic to update session state based on click data
-
-
-
-
