@@ -95,6 +95,7 @@ def Dragon(data, lat, long):
 # Streamlit app setup
 st.image('https://img.freepik.com/premium-vector/dragon-logo-icon-design-illustration_586739-384.jpg')
 st.header("Interactive World Map with Clickable Points",divider=True)
+st.markdown('click a position on the map to get the nearest predicted :blue[hospital] locations')
 
 
 # Initialize Folium map
