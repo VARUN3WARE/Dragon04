@@ -94,7 +94,7 @@ def Dragon(data, lat, long):
 
 # Streamlit app setup
 st.image('https://img.freepik.com/premium-vector/dragon-logo-icon-design-illustration_586739-384.jpg')
-st.title("Interactive World Map with Clickable Points",divider=True)
+st.header("Interactive World Map with Clickable Points",divider=True)
 
 
 # Initialize Folium map
