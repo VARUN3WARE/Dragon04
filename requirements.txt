@@ -4,9 +4,7 @@ numpy
 math
 lightgbm
 sklearn
-sklearn.preprocessing
-sklearn.multioutput
-sklearn.model_selection 
+scikit-learn
 pyngrok
 folium
 streamlit_folium
