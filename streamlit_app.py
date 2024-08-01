@@ -99,6 +99,10 @@ def Dragon(data, lat, long):
     y1_nw = np.array(y1_nw)
     return y1_nw
 
+import streamlit as st
+import folium
+from streamlit_folium import st_folium
+
 # Initialize Streamlit app
 st.title("Interactive World Map with Clickable Points")
 
@@ -106,22 +110,24 @@ st.title("Interactive World Map with Clickable Points")
 map_center = [20.0, 0.0]
 m = folium.Map(location=map_center, zoom_start=2)
 
-# Function to handle map clicks
+# Add a marker that will update based on the clicked location
+click_marker = folium.Marker(location=map_center, draggable=False)
+click_marker.add_to(m)
+
+# Handle map clicks
 def map_click(lat, lon):
-    # Clear existing markers and add a new one at the clicked location
-    m._children.clear()
+    click_marker.location = [lat, lon]
     folium.Marker([lat, lon], popup=f"Coordinates: {lat}, {lon}").add_to(m)
-    folium.Marker(location=[lat, lon], draggable=False).add_to(m)
 
 # Render the Folium map in Streamlit
-output = st_folium(m, width=700, height=500, return_data=True)
+output = st_folium(m, width=700, height=500)
 
-lat = 0
-long = 0
 # Check if a click event has occurred and update the map
-if output and 'last_clicked' in output:
+if output['last_clicked'] is not None:
     clicked_lat = output['last_clicked']['lat']
     clicked_lon = output['last_clicked']['lng']
     map_click(clicked_lat, clicked_lon)
     st.write(f"Clicked coordinates: Latitude = {clicked_lat}, Longitude = {clicked_lon}")
- 
+
+# Re-render the map with the updated marker
+st_folium(m, width=700, height=500)
