@@ -107,31 +107,57 @@ def Dragon(data, lat, long):
 
 
 
-lat = 38
-long = -101
-model_output = Dragon(data, lat, long)
 
-# Function to generate the map with markers
-def create_map(coordinates):
-    if len(coordinates) > 0:
-        initial_location = coordinates[0]
-    else:
-        initial_location = [0, 0]
 
-    m = folium.Map(location=initial_location, zoom_start=5)
-    for coord in coordinates:
-        Marker(location=coord).add_to(m)
-    return m
+
+
+
+
+
+
+
+
+
 
 # Streamlit app
 st.title("Location Visualization")
 
 st.markdown("""
-    This app displays the coordinates output by the model on an OpenStreetMap.
+    This app displays the coordinates output by the model on an OpenStreetMap. Click on the map to select a location.
 """)
-model_output = [(lat, long) for long, lat in model_output]
 
-coordinates = [tuple(coord) for coord in model_output]
+# Create a Folium map
+map_center = [20, 0]  # Center the map around the world
+m = folium.Map(location=map_center, zoom_start=2)
 
-map_object = create_map(coordinates)
-folium_static(map_object)
+# Display the map and capture clicks
+clicked_location = st_folium(m, width=700, height=500, return_data=True)
+
+# Check if a click happened and extract coordinates
+if clicked_location:
+    lat = clicked_location['lat']
+    long = clicked_location['lng']
+    st.write(f"Clicked coordinates: Latitude: {lat}, Longitude: {long}")
+
+    # Call the Dragon function with the clicked coordinates
+    model_output = Dragon(data, lat, long)
+
+    # Function to generate the map with markers
+    def create_map(coordinates):
+        if len(coordinates) > 0:
+            initial_location = coordinates[0]
+        else:
+            initial_location = [0, 0]
+
+        m = folium.Map(location=initial_location, zoom_start=5)
+        for coord in coordinates:
+            Marker(location=coord).add_to(m)
+        return m
+
+    # Display the updated map with model output
+    coordinates = [tuple(coord) for coord in model_output]
+    map_object = create_map(coordinates)
+    folium_static(map_object)
+else:
+    st.write("Click on the map to select a location.")
+
