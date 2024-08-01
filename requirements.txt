@@ -3,6 +3,6 @@ pandas
 numpy
 lightgbm
 scikit-learn
-pyngrok
+pyngrok==7.2.0
 folium
 streamlit-folium
