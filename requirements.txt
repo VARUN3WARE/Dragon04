@@ -1,10 +1,8 @@
 streamlit>=1.26.0
 pandas
 numpy
-math
 lightgbm
-sklearn
 scikit-learn
 pyngrok
 folium
-streamlit_folium
+streamlit-folium
