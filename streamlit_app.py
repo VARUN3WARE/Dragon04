@@ -116,7 +116,7 @@ def map_click(lat, lon):
             if isinstance(loc, (list, np.ndarray)) and len(loc) == 2:
                 loc_tuple = tuple(loc)  # Convert to tuple
                 st.write(f"Adding marker at: {loc_tuple}")
-                folium.Marker(loc_tuple, popup=f"Coordinates: {lat}, {lon}").add_to(m)
+                folium.Marker(loc_tuple, popup=f"Coordinates: {lat}, {lon}", icon=folium.Icon(color='blue')).add_to(m)
             else:
                 st.write(f"Invalid location format: {loc}")
 
