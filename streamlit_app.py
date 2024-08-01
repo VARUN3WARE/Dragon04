@@ -124,26 +124,4 @@ if output and 'last_clicked' in output:
     clicked_lon = output['last_clicked']['lng']
     map_click(clicked_lat, clicked_lon)
     st.write(f"Clicked coordinates: Latitude = {clicked_lat}, Longitude = {clicked_lon}")
-    lat = clicked_lat
-    long = clicked_lon
-
-    # Call the Dragon function with the new coordinates
-    model_output = Dragon(data, lat, long)
-
-    # Function to generate the map with markers
-    def create_map(coordinates):
-        if len(coordinates) > 0:
-            initial_location = coordinates[0]
-        else:
-            initial_location = [0, 0]
-
-        m = folium.Map(location=initial_location, zoom_start=5)
-        for coord in coordinates:
-            Marker(location=coord).add_to(m)
-        return m
-
-    coordinates = [(long, lat) for long, lat in model_output]
-    map_object = create_map(coordinates)
-    folium_static(map_object)
-else:
-    st.write("Click on the map to select a location.")
+ 
