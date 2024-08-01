@@ -127,35 +127,24 @@ st.markdown("""
     This app displays the coordinates output by the model on an OpenStreetMap. Click on the map to select a location.
 """)
 
-# Create a Folium map
-map_center = [20, 0]  # Center the map around the world
-m = folium.Map(location=map_center, zoom_start=2)
+# Create the map centered around a default location
+m = folium.Map(location=[0, 0], zoom_start=2)
 
-# Display the map and capture clicks
+# Render the map and capture the click event data
 clicked_location = st_folium(m, width=700, height=500, return_data=True)
 
-# Check if a click happened and extract coordinates
+# Extract latitude and longitude from the clicked location if available
 if clicked_location:
-    lat = clicked_location['lat']
-    long = clicked_location['lng']
-    st.write(f"Clicked coordinates: Latitude: {lat}, Longitude: {long}")
-
-    # Call the Dragon function with the clicked coordinates
+    lat = clicked_location.get('lat', 0)  # Default to 0 if not found
+    long = clicked_location.get('lng', 0)  # Default to 0 if not found
+    
+    # Optionally display the clicked coordinates
+    st.write(f"Clicked location: Latitude = {lat}, Longitude = {long}")
+    
+    # Call the Dragon function with the new coordinates
     model_output = Dragon(data, lat, long)
-
-    # Function to generate the map with markers
-    def create_map(coordinates):
-        if len(coordinates) > 0:
-            initial_location = coordinates[0]
-        else:
-            initial_location = [0, 0]
-
-        m = folium.Map(location=initial_location, zoom_start=5)
-        for coord in coordinates:
-            Marker(location=coord).add_to(m)
-        return m
-
-    # Display the updated map with model output
+    
+    # Generate the map with markers based on the model output
     coordinates = [tuple(coord) for coord in model_output]
     map_object = create_map(coordinates)
     folium_static(map_object)
