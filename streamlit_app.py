@@ -100,7 +100,7 @@ map_center = [37.0, -101.0]
 m = folium.Map(location=map_center, zoom_start=6)
 
 # Add initial marker
-click_marker = folium.Marker(location=map_center, draggable=False)
+click_marker = folium.Marker(location=map_center, draggable=False, icon=folium.Icon(color='red'))
 click_marker.add_to(m)
 
 # Handle map clicks
