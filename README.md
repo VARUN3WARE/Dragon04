@@ -94,3 +94,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For any questions or issues, please open an issue on this repository or contact me at [varunrao924@gmail.com].
 
+## Team Members 
+
+Arpit Bhomia 
+Varun Rao
+Ashish Ranjan
+Avinash Patel
+
