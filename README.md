@@ -97,7 +97,10 @@ For any questions or issues, please open an issue on this repository or contact 
 ## Team Members 
 
 Arpit Bhomia 
+
 Varun Rao
+
 Ashish Ranjan
+
 Avinash Patel
 
